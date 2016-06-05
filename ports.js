@@ -24,7 +24,7 @@ class ports {
         //this.options.parser =  SerialPort.parsers.readline('\r');
         //this.options.parser =  SerialPort.parsers.byteDelimiter(['14', '10']);
 
-        this.lastCMD = null;
+
         this.data = null;
         this.on =
             this._ready = false;
@@ -49,12 +49,8 @@ class ports {
 
                 self.port.on('data', (data)=> {
                     data = data.toString();
-                    debug("DATA> "+data);
-                    data = data.trim();
-                    if(data.length>0 && self.lastCMD!=data && data!="OK"){
-                        self.data += data;
-                    }
-
+                    debug("INPUT> "+ data);
+                    self.data += data;
                 });
 
                 Events.emit("ready");
@@ -95,12 +91,11 @@ class ports {
         var wait = wait || 1000;
 
         debug("write: " + str + "  : " + wait);
-        self.lastCMD = str;
+
         str = str + "\r";
         self.data = "";
 
         return new Promise((resolve, reject)=> {
-
             self.port.write(str, (err)=> {
                 err ? reject(err) : setTimeout(()=> {
                     resolve(self.data);
